@@ -13,6 +13,8 @@ import shutil
 
 start_link = 'http://physikmethoden.weebly.com'
 
+content_list1 = []
+
 
 def content_cri(tag):
     #return re.compile('wsite-menu-subitem').search(class_) and href 
@@ -23,7 +25,7 @@ def get_link(start_link):
     soup = BeautifulSoup(response.text,'lxml')
     content_list_temp = soup.find_all('a',class_=['wsite-menu-subitem', 'wsite-menu-item'])
     # print(content_list_temp)
-    content_list = []
+    
     for link in content_list_temp:
         content_list.append(link.get('href'))
         # print(soup)
@@ -35,26 +37,44 @@ content_list = get_link(start_link)
 link_new = []
 for i in range(len(content_list)):
     link_new.append(start_link+str(content_list[i]))
-    # #print(link_new[i])
-    
+    #print(link_new[i])
+
+
+def Download_file(start_link, original_link):
+    response = requests.get(start_link)
+    soup = BeautifulSoup(response.text,'lxml')
+    content_list_temp = soup.find_all('a', href=True)
+    # print(content_list_temp)
+    for link in content_list_temp:
+        if link.get('href').endswith('.pdf'):    
+            content_list1.append(original_link+link.get('href'))
+        #content_list1.append(link)
+        # print(soup)
+            print(content_list1)
+    return content_list1
+
+
 
 def get_pdf_link(link):
-    j = 0 
-    content_pdf = []
     response_temp = requests.get(link)
-    soup_temp = BeautifulSoup(response_temp.text,'lxml')
+    soup_pdf_temp = BeautifulSoup(response_temp.text,'html')
     #content_pdf_temp = soup_temp.find_all('a', href = True)
-    content_pdf_temp = soup_temp
-    while (content_pdf_temp.get.endswith('.pdf')):
-        content_pdf.append(content_pdf_temp[j].get('href'))
-        j += 1
-        print(content_pdf[j])
+    #content_pdf_temp = soup_temp
+    #while (content_pdf_temp.get.endswith('.pdf')):
+    for link in soup_pdf_temp.find_all('a'):
+        print(link)
+        print(link.get())
+  
     
-    
-get_pdf_link(link_new[3])
-
-'''
-for j in link_new:
+down_pdf_list=[]
+#get_link2(link_new[3],start_link)
+for down_link in link_new:
+    Download_file(down_link, start_link)
+    down_pdf_list += down_pdf_list
+#print(down_pdf_list)
+print('link fetch complete, download start')
+page = 0
+for j in down_pdf_list:
     response = requests.get(j, stream=True)
     try:    
         with open('img'+str(page)+'.pdf', 'wb') as out_file:
@@ -65,4 +85,3 @@ for j in link_new:
         print('ok')
     page += 1
     del response
-   ''' 

@@ -37,7 +37,7 @@ for i in range(len(content_list)):
     #print(link_new[i])
 
 
-def Download_file(start_link, original_link):
+def Fetch_downloadlink(start_link, original_link):
     response = requests.get(start_link)
     soup = BeautifulSoup(response.text,'lxml')
     content_list_temp = soup.find_all('a', href=True)
@@ -50,28 +50,29 @@ def Download_file(start_link, original_link):
             #print(content_list1)
     return content_list1
 
-  
+
+def Download_file(download_link):
+    page = 0
+    for j in download_link:
+        response = requests.get(j, stream=True)
+        try:    
+            with open('img'+str(page)+'.pdf', 'wb') as out_file:
+                shutil.copyfileobj(response.raw, out_file)
+        except ConnectionResetError as err:
+                    print(r'connetcion erro', err)
+        finally:
+            print('ok')
+            page += 1
+        del response
+
+
+
 down_pdf_list=[]
 #get_link2(link_new[3],start_link)
 for down_link in link_new:
-    down_pdf_list = Download_file(down_link, start_link)
+    down_pdf_list = Fetch_downloadlink(down_link, start_link)
     down_pdf_list += down_pdf_list
     print(down_pdf_list)
 #print(down_pdf_list)
 print(down_pdf_list)
 print('link fetch complete, download start')
-
-'''
-page = 0
-for j in down_pdf_list:
-    response = requests.get(j, stream=True)
-    try:    
-        with open('img'+str(page)+'.pdf', 'wb') as out_file:
-            shutil.copyfileobj(response.raw, out_file)
-    except ConnectionResetError as err:
-        print(r'connetcion erro', err)
-    finally:
-        print('ok')
-    page += 1
-    del response
-'''

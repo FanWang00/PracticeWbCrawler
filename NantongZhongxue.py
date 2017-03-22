@@ -31,7 +31,7 @@ def write_to_excel(content):
 
 write_to_excel()
 '''
-url = 'http://gklq.ntzx.cn/index.asp?page=1&jlh=0'
+
 
 
 def Write_to_text(content):
@@ -42,17 +42,23 @@ def Write_to_text(content):
         
 def Fetch_and_write(url):
     response = requests.get(url)
-    response.encoding = 'gb2312'
-    soup = BeautifulSoup(response.text,'lxml')
-
-    for i in soup.find_all('tr', bgcolor = ['#eeeeee', 'silver']):
-        lst=[]
-        for  child in i.descendants:
-            if isinstance(child,str) and child != '\n':
-                lst.append(child)
-        lst.append('\n')
-        with open ('Nanontzhongxue.txt','a') as f:
-            f.write(' '.join(lst))
+    if response.status_code == requests.codes.ok:
+        response.encoding = 'gb2312'
+        soup = BeautifulSoup(response.text,'lxml')
+        for i in soup.find_all('tr', bgcolor = ['#eeeeee', 'silver']):
+            lst=[]
+            for  child in i.descendants:
+                if isinstance(child,str) and child != '\n':
+                    lst.append(child)
+            print(lst)
+            lst.append('\n')
+            with open ('Nanontzhongxue.txt','a') as f:
+                f.write(' '.join(lst))
+    else:
+        print('connect error')
     # print(lst)
-Fetch_and_write(url)  
-
+if __name__ == "__main__":
+    for page in range(1,308):
+        url = 'http://gklq.ntzx.cn/index.asp?page='+str(page)+'&jlh=0'
+        Fetch_and_write(url)  
+    print('fertig!')
